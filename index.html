@@ -24,33 +24,92 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <section>
-          <h2>Asset Cache</h1>
-          <h4>Optimizing Static Asset Loading</h3>
-          <p>
-            <small>Create by <a> Abner Xin </a></small>
-          </p>
+        <section data-markdown>
+          <script type="text/template">
+            <h2>Asset Cache</h1>
+            <h4>Optimizing Static Asset Loading</h3>
+            <p>
+              <small>Create by <a> Abner Xin </a></small>
+            </p>
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            <ul>
+              <li>
+                <a href="#/3">HTTP headers</a>
+              </li>
+              <li>
+                <a href="#/4">Fingerprinting</a>
+              </li>
+            </ul>
+          </script>
         </section>
 
         <section>
-          <ul>
-            <li>
-              <a href="#/3">HTTP headers</a>
-            </li>
-            <li>
-              <a href="#/4">Fingerprinting</a>
-            </li>
-          </ul>
-        </section>
+          <section> 
+            <h2>HTTP headers</h2>
+            <p>
+              There are two ways to implement asset cache use http headers. 
+              <span class="fragment"> Use Web Server (Nginx， Apache ...). </span> 
+              <span class="fragment"> Set response headers in backend. </span> 
+            </p>
+          </section>
 
-        <section>
-          <h2>HTTP headers</h2>
-          <p>
-            There are two ways to implement asset cache use http headers. 
-            <span class="fragment"> Use Web Server (Nginx， Apache ...). </span> 
-            <span class="fragment"> Set response headers in backend. </span> 
-          </p>
-          </ul>
+          <section data-markdown>
+            <script type="text/template">
+              <h3>Caching Method 1: Last-Modified</h3>
+              ```
+              // response headers
+              Last-modified: Fri, 16 Mar 2007 04:00:25 GMT
+
+              // request headers
+              If-Modified-Since:Wed, 15 Mar 2017 12:02:32 GMT
+              ```
+              <img src="./images/HTTP-caching-last-modified_1.png">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              <h3>Caching Method 2: ETag</h3>
+              ```
+              // Two types of ETag
+              "123456789"    – A strong ETag validator
+              W/"123456789"  – A weak ETag validator
+
+              // response headers
+              ETag: W/"590-15ad1d92215"
+
+              // request headers
+              If-None-Match: W/"1be94-15ad1d9220d"
+              ```
+              <img src="./images/HTTP_caching_if_none_match.png">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              <h3>Caching Method 3: Expires</h3>
+              ```
+              Expires: Wed, 15 Mar 2017 12:39:27 GMT
+              ```
+              <img src="./images/HTTP_caching_expires.png">
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              <h3>Caching Method 4: Cache-Control</h3>
+              ```
+              Cache-Control: public, max-age=300
+              public  means the cached version can be saved by proxies and other intermediate servers, where everyone can see it.
+              private means the file is different for different users (such as their personal homepage). The user’s private browser can cache it, but not public proxies.
+              no-cache  means the file should not be cached. This is useful for things like search results where the URL appears the same but the content may change.
+              ```
+              <img src="./images/HTTP_caching_expires.png">
+            </script>
+          </section>
         </section>
       </div>
     </div>
