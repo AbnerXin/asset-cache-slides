@@ -26,7 +26,7 @@
       <div class="slides">
         <section data-markdown>
           <script type="text/template">
-            <h2>Static Asset Cache</h1>
+            <h2>Static Asset Cache</h2>
             <h4>Optimizing Static Asset Loading</h3>
             <p>
               <small>Create by <a> Abner Xin </a></small>
@@ -126,7 +126,8 @@
         <section>
           <section data-markdown>
             <script type="text/template">
-             In order to avoid the disadvantages of use http headers, we can rewrite the require path of static asset with query string.
+              In order to avoid the disadvantages of use http headers, we can rewrite the require path of static asset with query string.
+              
               ```
               // index.html
               <link rel="stylesheet" href="style/a.css?v=1.0.0">
@@ -136,16 +137,14 @@
                 collor: #FFF;
               }
               ```
+
               <span class="fragment"> If we have a new version, only change the file a.css, but all cached asset will be invalidsend. </span> 
             </script>
           </section>
 
           <section data-markdown>
             <script type="text/template">
-              Online version
-
               ```
-
               // Online version
               // index.html
               <link rel="stylesheet" href="style/a.css?v=123456">
@@ -172,11 +171,6 @@
             <script type="text/template">
               <h2>The best way: Changing File Name</h2>
               Use fingerprinting to get the file name. Fingerprinting is a technique that makes the name of a file dependent on the *contents* of the file.
-            </script>
-          </section>
-
-          <section data-markdown>
-            <script type="text/template">
             </script>
           </section>
         </section>
