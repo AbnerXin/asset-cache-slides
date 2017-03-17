@@ -27,7 +27,7 @@
         <section data-markdown>
           <script type="text/template">
             <h2>Static Asset Cache</h2>
-            <h4>Optimizing Static Asset Loading</h3>
+            <h4>Optimizing Static Asset Loading</h4>
             <p>
               <small>Create by <a> Abner Xin </a></small>
             </p>
@@ -36,12 +36,18 @@
 
         <section data-markdown>
           <script type="text/template">
+            # *Why?*
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
             <ul>
               <li>
-                <a href="#/3">HTTP headers</a>
+                HTTP headers
               </li>
               <li>
-                <a href="#/4">Cache with version info</a>
+                Revving *filenames* with version info
               </li>
             </ul>
           </script>
@@ -59,7 +65,36 @@
 
           <section data-markdown>
             <script type="text/template">
-              <h3>Caching Method 1: Last-Modified</h3>
+              <h4>Caching Method 1: Expires</h4>
+              ```
+              Expires: Wed, 15 Mar 2017 12:39:27 GMT
+              ```
+              <img src="./images/HTTP_caching_expires.png">
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              <h4>Caching Method 2: Cache-Control</h4>
+              ```
+              Cache-Control: public, max-age=3600
+              Cache-Control directives control who caches the response, under
+              what conditions and for how long.
+
+              public  means the cached version can be saved by proxies and other
+              intermediate servers, where everyone can see it.
+
+              private means the user’s private client can cache it, but not 
+              public proxies.
+
+              no-cache  means the file should not be cached.
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              <h4>Caching Method 3: Last-Modified</h4>
               ```
               // response headers
               Last-modified: Fri, 16 Mar 2007 04:00:25 GMT
@@ -73,52 +108,29 @@
 
           <section data-markdown>
             <script type="text/template">
-              <h3>Caching Method 2: ETag</h3>
+              <h4>Caching Method 4: ETag</h4>
               ```
               // Two types of ETag
               "123456789"    – A strong ETag validator
               W/"123456789"  – A weak ETag validator
 
               // response headers
-              ETag: W/"590-15ad1d92215"
+              ETag: "590-15ad1d92215"
 
               // request headers
-              If-None-Match: W/"1be94-15ad1d9220d"
+              If-None-Match: "590-15ad1d92215"
               ```
+               Common message digest algorithms: md5, sha1.
               <img src="./images/HTTP_caching_if_none_match.png">
             </script>
           </section>
 
           <section data-markdown>
             <script type="text/template">
-              <h3>Caching Method 3: Expires</h3>
-              ```
-              Expires: Wed, 15 Mar 2017 12:39:27 GMT
-              ```
-              <img src="./images/HTTP_caching_expires.png">
-            </script>
-          </section>
-
-          <section data-markdown>
-            <script type="text/template">
-              <h3>Caching Method 4: Cache-Control</h3>
-              ```
-              Cache-Control: public, max-age=300
-              public  means the cached version can be saved by proxies and other intermediate servers, where everyone can see it.
-              private means the file is different for different users (such as their personal homepage). The user’s private browser can cache it, but not public proxies.
-              no-cache  means the file should not be cached. This is useful for things like search results where the URL appears the same but the content may change.
-              ```
-              <img src="./images/HTTP_caching_expires.png">
-            </script>
-          </section>
-
-          <section data-markdown>
-            <script type="text/template">
               ### Summary
+              Use Expires or Cache-Control, before the expires, there are no connection between client and server, If we have a new version, the client can not get the *latest version*.
 
               Whether use Etag or Last-Modified, the client still need know whether the cached asset is latest version, still need connect with server.
-
-              Use Expires or Cache-Control, before the expires, there are no connection between client and server, but, the client can get the latest version
             </script>
           </section>
         </section>
@@ -126,8 +138,9 @@
         <section>
           <section data-markdown>
             <script type="text/template">
-              In order to avoid the disadvantages of use http headers, we can rewrite the require path of static asset with query string.
+              In order to avoid the disadvantages of http headers, we can rewrite the require path of static asset with query string.
               
+              set http headers : Cache-Control：max-age=31536000
               ```
               // index.html
               <link rel="stylesheet" href="style/a.css?v=1.0.0">
@@ -138,7 +151,7 @@
               }
               ```
 
-              <span class="fragment"> If we have a new version, only change the file a.css, but all cached asset will be invalidsend. </span> 
+              <span class="fragment"> If we have a new version, only change the file a.css, but all cached asset will be invalid. </span> 
             </script>
           </section>
 
@@ -147,7 +160,7 @@
               ```
               // Online version
               // index.html
-              <link rel="stylesheet" href="style/a.css?v=123456">
+              <link rel="stylesheet" href="style/a.css?v=f0a456">
 
               // a.css
               .class {
@@ -156,23 +169,76 @@
 
               // new version
               // index.html
-              <link rel="stylesheet" href="style/a.css?v=654321">
+              <link rel="stylesheet" href="style/a.css?v=654a0f">
 
               // a.css
               .class {
                 collor: #000;
               }
               ```
+              <span class="fragment"> Deployment *order* problem</span>
+
               <span class="fragment"> Some proxies or CDNs aren’t even able to cache files that contain query strings and it is recommended not to use them. </span> 
+              <a class="fragment" href="https://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/">(Link)</a>
             </script>
           </section>
 
           <section data-markdown>
             <script type="text/template">
               <h2>The best way: Changing File Name</h2>
+              set http headers : Cache-Control：max-age=31536000
+
               Use fingerprinting to get the file name. Fingerprinting is a technique that makes the name of a file dependent on the *contents* of the file.
             </script>
           </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ```
+              // Online version
+              // index.html
+              <link rel="stylesheet" href="style/123456_a.css">
+
+              // a.css
+              .class {
+                collor: #FFF;
+              }
+
+              // new version
+              // index.html
+              <link rel="stylesheet" href="style/654321_a.css">
+
+              // a.css
+              .class {
+                collor: #000;
+              }
+              ```
+
+            </script>
+          </section>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## References:
+            <small style="">
+
+              https://en.wikipedia.org/wiki/HTTP_ETag
+
+              https://nginx.org/en/docs/http/ngx_http_headers_module.html
+
+              https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+
+              https://betterexplained.com/articles/how-to-optimize-your-site-with-http-caching/
+
+            </small>
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # Thanks!
+          </script>
         </section>
       </div>
     </div>
